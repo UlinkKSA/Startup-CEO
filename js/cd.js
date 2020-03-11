@@ -1,80 +1,59 @@
-$(document).ready(function () {
-
-    Stripe.setPublishableKey('pk_test_9D43kM3d2vEHZYzPzwAblYXl');
-
-    var cardNumber, cardMonth, cardYear, cardCVC, cardHolder;
-
-    // check for any empty inputs
-    function findEmpty() {
-        var emptyText = $('#form-container input').filter(function () {
-
-            return $(this).val == null;
-        });
-
-        // add invalid class to empty inputs
-        console.log(emptyText.prevObject);
-        emptyText.prevObject.addClass('invalid');
+$('.input-cart-number').on('keyup change', function(){
+    $t = $(this);
+    
+    if ($t.val().length > 3) {
+      $t.next().focus();
     }
-
-    // check for card type and display corresponding icon
-    function checkCardType() {
-        cardNumber = $('#card-number').val();
-        var cardType = Stripe.card.cardType(cardNumber);
-        switch (cardType) {
-            case 'Visa':
-                $('#card-image').html('<img src="visaCard.svg" height="100%">');
-                break;
-            case 'Unknown':
-                $('#card-image').html('<img src="regCard.svg" height="100%">');
-                break;
-        }
-    }
-
-    // check card type on card number input blur 
-    $('#card-number').blur(function (event) {
-        event.preventDefault();
-        checkCardType();
-    });
-
-    // on button click: 
-    $('#card-btn').click(function (event) {
-
-        // get each input value and use Stripe to determine whether they are valid
-        var cardNumber = $('#card-number').val();
-        var isValidNo = Stripe.card.validateCardNumber(cardNumber);
-        var expMonth = $('#card-month').val();
-        var expYear = $('#card-year').val();
-        var isValidExpiry = Stripe.card.validateExpiry(expMonth, expYear);
-        var cardCVC = $('#card-cvc').val();
-        var isValidCVC = Stripe.card.validateCVC(cardCVC);
-        var cardHolder = $('#card-holder').val();
-        event.preventDefault();
-
-        // alert the user if any fields are missing
-        if (!cardNumber || !cardCVC || !cardHolder || !expMonth || !expYear) {
-            console.log(cardNumber + cardCVC + cardHolder + cardMonth + cardYear);
-            $('#form-errors').addClass('hidden');
-            $('#card-success').addClass('hidden');
-            $('#form-errors').removeClass('hidden');
-            $('#card-error').text('Please complete all fields.');
-            findEmpty();
-        } else {
-
-            // alert the user if any fields are invalid
-            if (!isValidNo || !isValidExpiry || !isValidCVC) {
-                $('#form-errors').css('display', 'block');
-                if (!isValidNo) {
-                    $('#card-error').text('Invalid credit card number.');
-                } else if (!isValidExpiry) {
-                    $('#card-error').text('Invalid expiration date.')
-                } else if (!isValidCVC) {
-                    $('#card-error').text('Invalid CVC code.')
-                }
-
-            } else {
-                $('#card-success').removeClass('hidden');
-            }
-        }
+    
+    var card_number = '';
+    $('.input-cart-number').each(function(){
+      card_number += $(this).val() + ' ';
+      if ($(this).val().length == 4) {
+        $(this).next().focus();
+      }
     })
-
-});
+    
+    $('.credit-card-box .number').html(card_number);
+  });
+  
+  $('#card-holder').on('keyup change', function(){
+    $t = $(this);
+    $('.credit-card-box .card-holder div').html($t.val());
+  });
+  
+  $('#card-holder').on('keyup change', function(){
+    $t = $(this);
+    $('.credit-card-box .card-holder div').html($t.val());
+  });
+  
+  $('#card-expiration-month, #card-expiration-year').change(function(){
+    m = $('#card-expiration-month option').index($('#card-expiration-month option:selected'));
+    m = (m < 10) ? '0' + m : m;
+    y = $('#card-expiration-year').val().substr(2,2);
+    $('.card-expiration-date div').html(m + '/' + y);
+  })
+  
+  $('#card-ccv').on('focus', function(){
+    $('.credit-card-box').addClass('hover');
+  }).on('blur', function(){
+    $('.credit-card-box').removeClass('hover');
+  }).on('keyup change', function(){
+    $('.ccv div').html($(this).val());
+  });
+  
+  /*function getCreditCardType(accountNumber) {
+    if (/^5[1-5]/.test(accountNumber)) {
+      result = 'mastercard';
+    } else if (/^4/.test(accountNumber)) {
+      result = 'visa';
+    } else if ( /^(5018|5020|5038|6304|6759|676[1-3])/.test(accountNumber)) {
+      result = 'maestro';
+    } else {
+      result = 'unknown'
+    }
+    return result;
+  }
+  
+  $('#card-number').change(function(){
+    console.log(getCreditCardType($(this).val()));
+  })*/
